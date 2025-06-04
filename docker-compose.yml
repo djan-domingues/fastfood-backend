@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: fastfood_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: fast123
+      POSTGRES_DB: fastfood_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: .
+      dockerfile: FastFood.WebAPI/Dockerfile
+    container_name: fastfood_api
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Host=db;Port=5432;Database=fastfood_db;Username=postgres;Password=fast123
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
